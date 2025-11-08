@@ -1,12 +1,12 @@
 # Ao Meter
 
-Ao (青 - blue in japanese) Meter is a desktop application that acts as a real-time DPS (Damage Per Second) meter for the game **Blue Protocol Star Resonance**. 
+Ao (青 - blue in japanese) Meter is a desktop application that acts as a real-time DPS (Damage Per Second) meter for the game **Blue Protocol Star Resonance**.
 It overlays the game window to provide detailed combat statistics without interrupting your gameplay.
 
 ## Application
 
-![Lite](src/help.png)
-![Advance](src/advc.png)
+![Lite](docs/lite.png)
+![Advance](docs/advc.png)
 
 ## Responsible Use
 
@@ -14,7 +14,19 @@ This tool is designed to help you improve your own performance. **Please do not 
 
 ## Compile
 
-Run `npm run dist` to compile the project
+Run `npm run dev` in development
+Run `npm run build` to compile the project
+
+## Problems
+
+If you have problems because of MSVS, run:
+
+```
+set GYP_MSVS_VERSION=2022
+set npm_config_msvs_version=2022
+set npm_config_clang=0
+npm install cap --build-from-source
+```
 
 ## Installation
 

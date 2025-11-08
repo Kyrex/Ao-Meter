@@ -1,0 +1,67 @@
+{
+  "name": "dps-meter",
+  "private": true,
+  "author": "Kyrex, ExBrain",
+  "description": "Blue Protocol DPS Meter",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "electron/main.js",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:react\" \"npm run dev:electron\"",
+    "dev:react": "vite",
+    "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
+    "build": "vite build && electron-builder",
+    "start": "electron ."
+  },
+  "build": {
+    "appId": "com.dpsmeter.desktop",
+    "icon": "public/icon.ico",
+    "files": [
+      "dist/**/*",
+      "server/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets"
+    },
+    "extraResources": [
+      {
+        "from": "node_modules/cap/",
+        "to": "cap/",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ]
+  },
+  "packageManager": "pnpm@10.13.1",
+  "dependencies": {
+    "cap": "^0.2.1",
+    "express": "^5.1.0",
+    "framer-motion": "^12.23.24",
+    "protobufjs": "^7.5.4",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "socket.io": "^4.8.1",
+    "winston": "^3.18.3"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.36.0",
+    "@types/node": "^24.6.0",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@vitejs/plugin-react": "^5.0.4",
+    "concurrently": "^9.2.1",
+    "cross-env": "^10.1.0",
+    "electron": "^38.0.0",
+    "electron-builder": "^26.0.12",
+    "eslint": "^9.36.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.22",
+    "globals": "^16.4.0",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.45.0",
+    "vite": "^7.1.7",
+    "wait-on": "^9.0.1"
+  }
+}

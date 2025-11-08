@@ -1,0 +1,34 @@
+body,
+select,
+option {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  font-family: "Jura", sans-serif;
+  font-optical-sizing: auto;
+  font-weight: normal;
+  font-style: normal;
+  user-select: none;
+
+  color: #eee;
+}
+
+body {
+  background-color: transparent;
+}
+
+:focus {
+  outline: none;
+}
+
+.dps-window {
+  overflow: hidden;
+  border-radius: 6px;
+  background-color: #1112;
+}
+
+.dps-state {
+  text-align: center;
+  margin: 8px;
+  min-height: 28px;
+}
