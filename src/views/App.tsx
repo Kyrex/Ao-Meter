@@ -44,11 +44,11 @@ function App() {
     if (!serverUrl) return;
     if (dataService.current) return;
 
-    console.log('Creating service');
     window.api.windowArgs().then((args) => {
       const uid = findUserUid(args);
       if (uid) setUid(uid);
-      console.log('UID', uid, args);
+      console.log('UID from args:', uid);
+
       if (dataService.current) return;
       const service = new DataService(serverUrl, uid);
       dataService.current = service;
@@ -68,7 +68,6 @@ function App() {
   }, [])
 
   const onClear = async () => {
-    console.log('Clear');
     const service = dataService.current;
     if (!service) return;
     service.clear();
@@ -78,19 +77,16 @@ function App() {
   }
 
   const onLimit = () => {
-    console.log('Limit');
     setLimit(limit === 5 ? 20 : 5);
   }
 
   const onMode = () => {
-    console.log('Mode', !isLiteRef.current);
     const nextMode = !isLiteRef.current;
     setIsLite(nextMode);
     windowService.current?.apply(nextMode);
   }
 
   const onResize = (size: WindowSize, completed: boolean) => {
-    console.log("Resizing lite: ", isLiteRef.current);
     windowService.current?.resize(size, isLiteRef.current);
     if (completed) windowService.current?.save();
   };

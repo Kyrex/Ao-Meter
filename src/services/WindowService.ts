@@ -10,7 +10,6 @@ export class WindowService {
     private onLock: (locked: boolean) => void;
 
     private onMoved = (pos: WindowPosition) => {
-        console.log('On Moved', pos);
         this.state = { ...this.state, position: pos };
         this.save();
     }
@@ -60,21 +59,15 @@ export class WindowService {
         size.w = Math.max(minWidth, size.w);
         size.h = Math.max(MIN_LITE_H, size.h);
 
-        if (isLite && this.state.size.w === MIN_ADVC_W) {
-            size.w = MIN_LITE_W;
-        } else if (!isLite && this.state.size.w === MIN_LITE_W) {
-            size.w = MIN_ADVC_W;
+        const { w, h } = this.state.size;
+        if (isLite) {
+            if (w === MIN_ADVC_W) size.w = MIN_LITE_W;
+            if (h === MIN_ADVC_H) size.h = MIN_LITE_H;
+        } else {
+            if (w === MIN_LITE_W) size.w = MIN_ADVC_W;
+            if (h === MIN_LITE_H) size.h = MIN_ADVC_H;
         }
 
-        if (isLite && this.state.size.h === MIN_ADVC_H) {
-            size.h = MIN_LITE_H;
-            console.log('SET MIN LITE');
-        } else if (!isLite && this.state.size.h === MIN_LITE_H) {
-            size.h = MIN_ADVC_H;
-            console.log('SET MIN ADVC');
-        }
-
-        console.log(size);
         this.state = { ...this.state, size: size };
         window.api.resizeWindow(size);
     }
