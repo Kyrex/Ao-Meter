@@ -61,8 +61,8 @@ function PlayerEntry(props: PlayerEntryProps) {
                 </span>}
             </div>
             <div className="rank-col" style={{ width: "70px" }}>
-                <span>{Utils.formatValue(player.realtime_dps)}{isLite && <MiniLabel text="/s" />}</span>
-                {!isLite && <span>{Utils.formatValue(player.realtime_hps)}</span>}
+                <span>{Utils.formatValue(player.total_dps)}{isLite && <MiniLabel text="/s" />}</span>
+                {!isLite && <span>{Utils.formatValue(player.total_hps)}</span>}
                 {!isLite && <span>{Utils.formatValue(player.taken_damage)}</span>}
             </div>
             {!isLite && <div className="rank-col">
