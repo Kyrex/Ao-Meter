@@ -425,7 +425,7 @@ class PacketProcessor {
                 `EXT: ${extra.join('|')}`,
             ];
             const dmgLog = dmgLogArr.join(' ');
-            this.logger.info(dmgLog);
+            this.logger.debug(dmgLog);
             this.userDataManager.addLog(dmgLog);
         }
     }
@@ -644,13 +644,13 @@ class PacketProcessor {
                 case AttrType.AttrName:
                     const enemyName = reader.string();
                     this.userDataManager.enemyCache.name.set(enemyUuid, enemyName);
-                    this.logger.info(`Found monster name ${enemyName} for id ${enemyUid} uuid ${enemyUuid}`);
+                    this.logger.debug(`Found monster name ${enemyName} for id ${enemyUid} uuid ${enemyUuid}`);
                     break;
                 case AttrType.AttrId:
                     const attrId = reader.int32();
                     const name = monsterNames[attrId];
                     if (name) {
-                        this.logger.info(`Found moster name ${name} for id ${enemyUid} uuid ${enemyUuid}`);
+                        this.logger.debug(`Found moster name ${name} for id ${enemyUid} uuid ${enemyUuid}`);
                         this.userDataManager.enemyCache.name.set(enemyUuid, name);
                     }
                     break;

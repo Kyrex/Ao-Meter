@@ -20,14 +20,6 @@ function App() {
   const dataService = useRef<DataService>(null);
   const windowService = useRef<WindowService>(null);
 
-  const findUserUid = (args?: string[]) => {
-    if (!args) return;
-    const KEY = "--uid=";
-    const arg = args.find((a) => a.startsWith(KEY));
-    if (!arg) return;
-    return arg.substring(KEY.length).trim();
-  }
-
   useEffect(() => {
     if (windowService.current) return;
     const service = new WindowService((locked) => {
@@ -44,22 +36,24 @@ function App() {
     if (!serverUrl) return;
     if (dataService.current) return;
 
-    window.api.windowArgs().then((args) => {
-      const uid = findUserUid(args);
-      if (uid) setUid(uid);
-      console.log('UID from args:', uid);
+    const service = new DataService(serverUrl, uid);
+    dataService.current = service;
+    service.start(
+      (e) => setEncounter(e),
+      (e) => setEncounters(e),
+    );
 
-      if (dataService.current) return;
-      const service = new DataService(serverUrl, uid);
-      dataService.current = service;
-      service.start(
-        (e) => setEncounter(e),
-        (e) => setEncounters(e),
-      );
-    });
+    const onUid = (uid: string) => {
+      setUid(uid);
+      service.setUid(uid);
+      console.log(`Got Player uid: ${uid}`);
+    }
+    window.api.onUid(onUid);
 
-
-    return () => dataService.current?.stop();
+    return () => {
+      dataService.current?.stop();
+      window.api.offUid(onUid);
+    };
   }, [serverUrl]);
 
   useEffect(() => {

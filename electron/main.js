@@ -37,7 +37,6 @@ function createWindow() {
     win.webContents.send("on-lock", isLocked);
   }
 
-  ipcMain.handle("window-args", () => process.argv);
   ipcMain.on("window-close", (_) => win.close());
   ipcMain.on("window-move", (_, pos) => win.setPosition(pos.x, pos.y));
   ipcMain.on("window-resize", (_, res) => {
@@ -66,7 +65,17 @@ function createWindow() {
   return win;
 }
 
-function createServer(onReady, serverPort = 8989) {
+function handleServerData(data, onReady, onUid) {
+  data = data.toString();
+
+  const isReady = data.match(/Game server detected/);
+  if (isReady) return onReady();
+
+  const uid = data.match(/Got player UUID! UUID: \d* UID: (\d+)/)?.at(1);
+  if (uid) return onUid(uid);
+}
+
+function createServer(onReady, onUid, serverPort = 8989) {
   let serverPath = path.join(__dirname, "../server/server.js");
 
   const server = fork(serverPath, [serverPort], {
@@ -74,11 +83,10 @@ function createServer(onReady, serverPort = 8989) {
     execArgv: [],
   });
 
+  const url = `http://localhost:${serverPort}`;
   server.stdout.on("data", (data) => {
-    console.log(`[server] ${data}`);
-    if (data.toString().startsWith("Game server detected")) {
-      onReady(`http://localhost:${serverPort}`);
-    }
+    console.log(data.toString());
+    handleServerData(data, () => onReady(url), onUid);
   });
 
   server.stderr.on("data", (data) => {
@@ -95,7 +103,10 @@ function createServer(onReady, serverPort = 8989) {
 async function main() {
   if (window) return;
   window = createWindow();
-  server = createServer((url) => window.webContents.send("on-ready", url));
+  server = createServer(
+    (url) => window.webContents.send("on-ready", url),
+    (uid) => window.webContents.send("on-uid", uid)
+  );
 
   window.on("closed", () => {
     if (!server) return;

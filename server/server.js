@@ -21,7 +21,7 @@ let server_port;
 
 async function main() {
   const logger = winston.createLogger({
-    level: "error",
+    level: "info",
     format: winston.format.combine(
       winston.format.colorize({ all: true }),
       winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),

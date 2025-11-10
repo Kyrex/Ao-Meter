@@ -3,8 +3,9 @@ interface Window {
         closeWindow: () => void;
         moveWindow: (pos: WindowPosition) => void;
         resizeWindow: (res: WindowSize) => void;
-        windowArgs: () => Promise<string[]>;
         //
+        onUid: (fn: (uid: string) => void) => void;
+        offUid: (fn: (uid: string) => void) => void;
         onReady: (fn: (url: string) => void) => void;
         offReady: (fn: (url: string) => void) => void;
         onMoved: (fn: (pos: WindowPosition) => void) => void;

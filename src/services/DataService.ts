@@ -36,6 +36,10 @@ export class DataService {
         this.encounters = [];
     }
 
+    setUid(uid: string) {
+        this.uid = uid;
+    }
+
     liveDpsAsEncounter(): Encounter {
         return {
             endTime: Date.now(),
