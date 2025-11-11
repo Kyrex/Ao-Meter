@@ -413,6 +413,7 @@ class UserDataManager {
         this.logDirExist = new Set();
 
         this.enemyCache = {
+            id: new Map(),
             name: new Map(),
             hp: new Map(),
             maxHp: new Map(),
@@ -611,6 +612,7 @@ class UserDataManager {
         const enemyIds = new Set([...this.enemyCache.name.keys(), ...this.enemyCache.hp.keys(), ...this.enemyCache.maxHp.keys()]);
         enemyIds.forEach((id) => {
             result[id] = {
+                id: this.enemyCache.id.get(id),
                 name: this.enemyCache.name.get(id),
                 hp: this.enemyCache.hp.get(id),
                 max_hp: this.enemyCache.maxHp.get(id),

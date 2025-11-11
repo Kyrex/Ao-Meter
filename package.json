@@ -3,7 +3,7 @@
   "private": true,
   "author": "Kyrex, ExBrain",
   "description": "Blue Protocol DPS Meter",
-  "version": "0.0.0",
+  "version": "1.0.2",
   "type": "module",
   "main": "electron/main.js",
   "scripts": {
@@ -55,6 +55,7 @@
     "cross-env": "^10.1.0",
     "electron": "^38.0.0",
     "electron-builder": "^26.0.12",
+    "electron-rebuild": "^3.2.9",
     "eslint": "^9.36.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.22",

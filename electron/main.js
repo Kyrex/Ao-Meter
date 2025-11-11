@@ -5,6 +5,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const isDevelopment = process.env.NODE_ENV === "development";
 
 let window, server;
 let isLocked = false;
@@ -55,7 +56,7 @@ function createWindow() {
     win.webContents.send("on-lock", isLocked);
   });
 
-  if (process.env.NODE_ENV === "development") {
+  if (isDevelopment) {
     win.loadURL("http://localhost:5173");
     win.webContents.openDevTools({ mode: "detach" });
   } else {
@@ -65,17 +66,20 @@ function createWindow() {
   return win;
 }
 
-function handleServerData(data, onReady, onUid) {
-  data = data.toString();
+function handleServerData(rawData, window, url) {
+  const data = rawData.toString();
+
+  const noNpcap = data.match(/Npcap not detected/);
+  if (noNpcap) return window.webContents.send("on-error", "Npcap not detected");
 
   const isReady = data.match(/Game server detected/);
-  if (isReady) return onReady();
+  if (isReady) return window.webContents.send("on-ready", url);
 
   const uid = data.match(/Got player UUID! UUID: \d* UID: (\d+)/)?.at(1);
-  if (uid) return onUid(uid);
+  if (uid) return window.webContents.send("on-uid", uid);
 }
 
-function createServer(onReady, onUid, serverPort = 8989) {
+function createServer(window, serverPort = 8989) {
   let serverPath = path.join(__dirname, "../server/server.js");
 
   const server = fork(serverPath, [serverPort], {
@@ -85,8 +89,8 @@ function createServer(onReady, onUid, serverPort = 8989) {
 
   const url = `http://localhost:${serverPort}`;
   server.stdout.on("data", (data) => {
-    console.log(data.toString());
-    handleServerData(data, () => onReady(url), onUid);
+    if (isDevelopment) console.log(data.toString());
+    handleServerData(data, window, url);
   });
 
   server.stderr.on("data", (data) => {
@@ -95,6 +99,12 @@ function createServer(onReady, onUid, serverPort = 8989) {
 
   server.on("exit", (code) => {
     console.log(`Server process exited with code ${code}`);
+    try {
+      window.webContents.send(
+        "on-error",
+        `Could not launch server. Code: ${code}`
+      );
+    } catch (err) {}
   });
 
   return server;
@@ -103,10 +113,7 @@ function createServer(onReady, onUid, serverPort = 8989) {
 async function main() {
   if (window) return;
   window = createWindow();
-  server = createServer(
-    (url) => window.webContents.send("on-ready", url),
-    (uid) => window.webContents.send("on-uid", uid)
-  );
+  server = createServer(window);
 
   window.on("closed", () => {
     if (!server) return;

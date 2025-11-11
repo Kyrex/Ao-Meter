@@ -6,6 +6,7 @@ export interface PlayerResponse {
     totalDps: number;
     totalDamage: number;
     totalHealing: number;
+    damageOvertime: Map<string, number[]>;
 }
 
 export interface Encounter {
@@ -14,7 +15,7 @@ export interface Encounter {
     response: PlayerResponse;
 }
 
-export const emptyResponse: PlayerResponse = { players: [], totalDps: 0, totalDamage: 0, totalHealing: 0 };
+export const emptyResponse: PlayerResponse = { players: [], totalDps: 0, totalDamage: 0, totalHealing: 0, damageOvertime: new Map() };
 export const emptyEncounter: Encounter = { endTime: 0, startTime: 0, response: emptyResponse };
 
 export class DataService {
@@ -105,17 +106,45 @@ export class DataService {
                         critical: percent(p.total_count?.critical, totalHits),
                     };
                 });
+
+                const damageOvertime = this.lastResponse?.damageOvertime ?? new Map<string, number[]>();
+                let keys = Object.keys(damageOvertime);
+                players.forEach((p) => {
+                    if (!p.uid) return;
+                    keys = keys.filter((k) => k !== p.uid);
+                    const arr = damageOvertime.get(p.uid!) ?? new Array<number>();
+                    arr?.unshift(p.realtime_dps ?? 0);
+                    damageOvertime.set(p.uid!, arr.slice(0, 20));
+                });
+                keys.forEach((k) => {
+                    const arr = damageOvertime.get(k) ?? new Array<number>();
+                    arr?.unshift(0);
+                    damageOvertime.set(k, arr.slice(0, 20));
+                });
+
                 return {
                     players: players,
                     totalDps: totalDps,
                     totalDamage: totalDamage,
                     totalHealing: totalHealing,
+                    damageOvertime: damageOvertime,
                 }
             })
             .catch((e) => {
                 console.warn(e);
                 return emptyResponse;
             });
+    }
+
+    private async apiFetchEnemies(): Promise<any[]> {
+        return fetch(`${this.baseUrl}/api/enemies`)
+            .then((r) => r.json())
+            .then((r) => {
+                return Object.entries<any>(r.enemy).map(([k, v]) => {
+                    v.uid = k;
+                    return r
+                });
+            })
     }
 
     private async apiClear() {

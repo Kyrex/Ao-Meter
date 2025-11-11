@@ -648,6 +648,7 @@ class PacketProcessor {
                     break;
                 case AttrType.AttrId:
                     const attrId = reader.int32();
+                    this.userDataManager.enemyCache.id.set(enemyUuid, attrId);
                     const name = monsterNames[attrId];
                     if (name) {
                         this.logger.debug(`Found moster name ${name} for id ${enemyUid} uuid ${enemyUuid}`);

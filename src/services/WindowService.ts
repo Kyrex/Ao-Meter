@@ -19,6 +19,10 @@ export class WindowService {
         this.state = emptyWindowState;
     }
 
+    size(): WindowSize {
+        return this.state.size;
+    }
+
     listen = () => {
         window.api.onMoved(this.onMoved.bind(this));
         window.api.onLock(this.onLock);

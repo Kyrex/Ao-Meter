@@ -10,6 +10,7 @@ import './App.css';
 function App() {
   const [uid, setUid] = useState('');
   const [limit, setLimit] = useState(5);
+  const [error, setError] = useState('');
   const [serverUrl, setServerUrl] = useState('');
   const [isLite, setIsLite, isLiteRef] = useStateWithRef(true);
 
@@ -29,7 +30,13 @@ function App() {
     service.load();
     service.apply(isLite);
     service.listen();
-    return () => service.dispose();
+
+    window.api.onError(setError);
+    return () => {
+      service.dispose();
+      window.api.offError(setError);
+      windowService.current = null;
+    }
   }, []);
 
   useEffect(() => {
@@ -38,10 +45,7 @@ function App() {
 
     const service = new DataService(serverUrl, uid);
     dataService.current = service;
-    service.start(
-      (e) => setEncounter(e),
-      (e) => setEncounters(e),
-    );
+    service.start(setEncounter, setEncounters);
 
     const onUid = (uid: string) => {
       setUid(uid);
@@ -86,20 +90,19 @@ function App() {
   };
 
   const getLeaderboardState = () => {
-    if (!serverUrl) return (
-      <div className='dps-state'>
-        <span>Initializing...</span>
-      </div>
-    );
+    if (error) {
+      return <div className='dps-state'><span style={{ color: "#d00", fontWeight: "bold" }}>Error: {error}</span></div>;
+    }
+    if (!serverUrl) {
+      return <div className='dps-state'><span>Initializing...</span></div>;
+    }
+
     const renderEncounter = selected !== -1 ? encounters[selected] : encounter;
     if (selected !== 1 && renderEncounter.response.totalDamage === 0) {
-      return (
-        <div className='dps-state'>
-          <span>Waiting...</span>
-        </div>
-      );
+      return <div className='dps-state'><span>Waiting...</span></div>;
     }
-    return (<Leaderboard encounter={renderEncounter} limit={limit} isLite={isLite} uid={uid} />);
+    const width = windowService.current?.size().w ?? 0;
+    return (<Leaderboard width={width} encounter={renderEncounter} limit={limit} isLite={isLite} uid={uid} />);
   }
 
   return (

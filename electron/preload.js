@@ -7,6 +7,8 @@ contextBridge.exposeInMainWorld("api", {
   //
   onUid: (fn) => ipcRenderer.on("on-uid", (_, uid) => fn(uid)),
   offUid: (fn) => ipcRenderer.removeListener("on-uid", (_, uid) => fn(uid)),
+  onError: (fn) => ipcRenderer.on("on-error", (_, err) => fn(err)),
+  offError: (fn) => ipcRenderer.removeListener("on-error", (_, err) => fn(err)),
   onReady: (fn) => ipcRenderer.on("on-ready", (_, url) => fn(url)),
   offReady: (fn) => ipcRenderer.removeListener("on-ready", (_, url) => fn(url)),
   onMoved: (fn) => ipcRenderer.on("on-move", (_, pos) => fn(pos)),
