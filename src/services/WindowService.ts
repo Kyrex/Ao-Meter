@@ -55,7 +55,7 @@ export class WindowService {
     }
 
     resize = (size: WindowSize, isLite: boolean) => {
-        const MIN_LITE_W = 425;
+        const MIN_LITE_W = 445;
         const MIN_ADVC_W = 525;
         const MIN_LITE_H = 28 + 5 + 30 + 6 * 40;
         const MIN_ADVC_H = 28 + 5 + 30 + 6 * 64;

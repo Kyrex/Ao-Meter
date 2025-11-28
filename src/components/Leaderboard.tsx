@@ -90,6 +90,13 @@ function PlayerEntry(props: PlayerEntryProps) {
     const luckPercent = player.percentages?.lucky ?? 0;
     const criticalPercent = player.percentages?.critical ?? 0;
 
+    let maxIcon = '🎲';
+    let maxPercent = criticalPercent;
+    if (luckPercent > criticalPercent) {
+        maxIcon = '🍀';
+        maxPercent = luckPercent;
+    }
+
     return (
         <>
             <div className="rank-bar" style={{
@@ -127,10 +134,13 @@ function PlayerEntry(props: PlayerEntryProps) {
                     <span><MiniLabel text="HPS" /></span>
                     <span><MiniLabel text="DTK" /></span>
                 </div>}
-                <div className="rank-col" style={{ width: isLite ? "40px" : "70px" }}>
-                    <span>{Utils.formatValue(criticalPercent)}<MiniLabel text="%" /></span>
-                    {!isLite && <span>{Utils.formatValue(luckPercent)}<MiniLabel text="%" /></span>}
-                    {!isLite && <span>{Utils.formatValue(peakDps)}</span>}
+                <div className="rank-col" style={{ width: isLite ? "60px" : "70px" }}>
+                    {isLite && <span>{Utils.formatValue(maxPercent)}<MiniLabel text={`% ${maxIcon}`} /></span>}
+                    {!isLite && <>
+                        <span>{Utils.formatValue(criticalPercent)}<MiniLabel text="%" /></span>
+                        <span>{Utils.formatValue(luckPercent)}<MiniLabel text="%" /></span>
+                        <span>{Utils.formatValue(peakDps)}</span>
+                    </>}
                 </div>
                 <div className="rank-col" style={{ width: "60px" }}>
                     <span>{Utils.formatValue(player.total_damage?.total)}</span>
